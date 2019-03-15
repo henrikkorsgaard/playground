@@ -1,0 +1,76 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <script src="adapter.js"></script>
+    <script src="diff-cam-engine.js"></script>
+    <script>
+        var video = document.getElementById('video');
+        var canvas = document.getElementById('canvas');
+        var sinceLastPlay = Date.now()
+        var hello = new Audio("hello.wav");
+        var goodbye = new Audio("goodbye.wav");
+        var someoneInPicture = false;
+
+        DiffCamEngine.init({
+                    video: video,
+                    motionCanvas: canvas,
+                    captureIntervalTime: 100,
+                    initErrorCallback: errorHandler,
+                    initSuccessCallback: succesHandler,
+                    captureCallback: captureHandler,
+                    includeMotionBox: true,
+                    diffWidth:640,
+                    diffHeight:480,
+                    pixelDiffThreshold:64,
+                    scoreThreshold:32
+                });
+
+                function errorHandler(e) {
+                    console.log("error")
+                    console.log(e)
+                }
+
+
+                function succesHandler(e) {
+                    DiffCamEngine.start()
+                }
+
+                function captureHandler(e){
+                    if(e.hasMotion && !someoneInPicture){
+                        console.log("coming")
+                        someoneInPicture = true;
+                        hello.play()
+                    } else if(!e.hasMotion && someoneInPicture) {
+                        console.log("leaving")
+                        someoneInPicture = false;
+                        goodbye.play()
+                    }
+                   
+                    
+                }
+
+
+        /*
+        
+
+        // Get access to the camera!
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Not adding `{ audio: true }` since we only want video now
+            navigator.mediaDevices.getUserMedia({
+                video: true
+            }).then(function (stream) {
+                //video.src = window.URL.createObjectURL(stream);
+                video.srcObject = stream;
+                video.play();
+            });
+        }*/
+    </script>
+</body>
+
+</html>
